@@ -107,20 +107,8 @@ function Footer() {
               Subscribe to get updates on new releases.
             </p>
             <form className="flex">
-              <input 
-                type="email" 
-                placeholder="Your email" 
-                className="px-3 py-2 bg-gray-700 text-white rounded-l focus:outline-none focus:ring-1 focus:ring-red-500 text-sm w-full"
-                required
-              />
-              <motion.button
-                type="submit"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-r text-sm font-medium transition-colors"
-              >
-                Subscribe
-              </motion.button>
+          
+             
             </form>
           </div>
         </div>
