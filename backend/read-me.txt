@@ -1,0 +1,6 @@
+- clone repo
+- create the database in your mysql/workbench
+- change credetials under src/utils dbConnection.ts
+- go on root directory
+- npm install
+- run server "npm start"
