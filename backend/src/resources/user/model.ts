@@ -1,9 +1,16 @@
 import { sequelize } from "../../utils/dbConnect";
-import { DataTypes, Model } from "sequelize";
+import { DataTypes, Model, InferAttributes, InferCreationAttributes } from "sequelize";
 
-class Users extends Model { }
+export interface UserModel extends Model<InferAttributes<UserModel>, InferCreationAttributes<UserModel>> {
+    id: number;
+    firstName: string;
+    lastName?: string;
+    email: string;
+    password: string;
+    isAdmin: boolean;
+}
 
-Users.init({
+const User = sequelize.define<UserModel>('Users', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -15,20 +22,27 @@ Users.init({
     },
     lastName: {
         type: DataTypes.STRING,
+        allowNull: true
     },
     email: {
         type: DataTypes.STRING,
-        allowNull: false
+        allowNull: false,
+        unique: true,
+        validate: {
+            isEmail: true
+        }
     },
     password: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    isAdmin: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
     }
-}, {
-    sequelize,
-    modelName: 'Users'
 });
 
 // sequelize.sync({ force: true })
 
-export default Users
+export default User;

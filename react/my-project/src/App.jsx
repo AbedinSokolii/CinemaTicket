@@ -7,6 +7,7 @@ import SwiperComponent from './SwiperComponent';
 import Login from './Login';
 import Footer from './Footer';
 import Register from './Register';
+import AdminPanel from './AdminPanel';
 
 export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -17,6 +18,7 @@ export default function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/admin" element={<AdminPanel />} />
         <Route path="*" element={
           <>
             {!searchQuery && <SwiperComponent />}
