@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.0] - 2024
+## [1.0.0] - 2025
 
 ### Added
 - Complete ticket booking system implementation
