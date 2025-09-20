@@ -14,7 +14,7 @@ const SwiperComponent = () => {
 
   return (
     <div className="bg-Bg_color relative">
-      <div className=" relative mx-auto w-full max-w-[600px] h-[250px] sm:max-w-[800px] sm:h-[350px] lg:max-w-[1200px] lg:h-[500px]">
+      <div className="">
       <Swiper
         modules={[Navigation]}
         onSwiper={(swiper) => (swiperRef.current = swiper)}
@@ -33,11 +33,11 @@ const SwiperComponent = () => {
         }}
       >
         <SwiperSlide className="bg-blue-500 flex items-center justify-center text-white text-center rounded-lg">
-        <img src={moviePoster} alt="" />
+        <img src={moviePoster} className="min-w-full" alt="" />
         </SwiperSlide>
 
         <SwiperSlide className="flex items-center justify-center text-white text-center rounded-lg">
-          <img src={movies} alt="" className="w-full h-full object-cover" />
+          <img src={movies} alt="" className="min-w-full w-full h-full object-cover " />
         </SwiperSlide>
 
         {/* Video Slide */}

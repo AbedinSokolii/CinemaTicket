@@ -397,11 +397,13 @@ const AdminPanel = () => {
                 animate={{ opacity: 1, y: 0 }}
                 className="bg-Nav_bar rounded-xl overflow-hidden"
               >
+                <div className="p-4">
                 <img
                   src={movie.imageSrc}
                   alt={movie.imageAlt}
-                  className="w-full h-48 object-cover"
+                  className="w-full h-full object-cover"
                 />
+                </div>
                 <div className="p-4">
                   <h3 className="text-xl font-bold text-white mb-2">{movie.name}</h3>
                   <div className="flex items-center gap-2 text-yellow-400 mb-2">

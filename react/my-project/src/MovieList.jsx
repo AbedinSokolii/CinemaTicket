@@ -6,7 +6,7 @@ import "./datepicker.css";
 import MovieDetailsModal from './MovieDetailsModal';
 import movieService from './services/movie.service';
 
-function Header({ searchQuery }) {
+function MovieList({ searchQuery }) {
   const [movies, setMovies] = useState([]);
   const [filteredMovies, setFilteredMovies] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -95,7 +95,7 @@ function Header({ searchQuery }) {
           <h2 className="text-2xl font-bold tracking-tight text-white">
             {isSearching 
               ? `Search Results (${filteredMovies.length})`
-              : 'Beje zgjedhjen e filmave tjuj'}
+              : 'Beje zgjedhjen e filmave  tuaj'}
           </h2>
           <div className="date-picker-container">
             <DatePicker
@@ -143,7 +143,7 @@ function Header({ searchQuery }) {
                       <span className="absolute inset-0" />
                       {movie.name}
                     </h3>
-                    <p className="mt-1 text-sm text-gray-500">{movie.description}</p>
+                    <p className="mt-1 text-ellipsis overflow-hidden h-full max-h-40 text-sm text-gray-500">{movie.description}</p>
                     <p className="mt-1 text-sm text-gray-400">Show Times: {formatShowTimes(movie.showTimes)}</p>
                   </div>
                   <p className="text-sm font-medium text-gray-400">{movie.price}</p>
@@ -172,4 +172,4 @@ function Header({ searchQuery }) {
   );
 }
 
-export default Header;
+export default MovieList;

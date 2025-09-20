@@ -12,8 +12,6 @@ function Navbar({ onSearch }) {
   useEffect(() => {
     // Check for user data whenever component mounts or route changes
     const currentUser = authService.getCurrentUser();
-    console.log('Current user data:', currentUser); // Debug log
-    console.log('Is admin?', currentUser?.user?.isAdmin); // Debug log
     setUser(currentUser);
   }, []);
 

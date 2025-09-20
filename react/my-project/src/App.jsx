@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Header from "./Header";
+import MovieList from "./MovieList";
 import Navbar from "./Navbar";
 
 import SwiperComponent from './SwiperComponent';
@@ -22,7 +22,7 @@ export default function App() {
         <Route path="*" element={
           <>
             {!searchQuery && <SwiperComponent />}
-            <Header searchQuery={searchQuery} />
+            <MovieList searchQuery={searchQuery} />
             <Footer />
           </>
         } />
