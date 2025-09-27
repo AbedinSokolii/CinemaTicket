@@ -11,7 +11,7 @@ export interface MovieModel extends Model<InferAttributes<MovieModel>, InferCrea
     duration: string;
     rating: number;
     showTimes: string[];
-    releaseDate: Date;
+    releaseDate: Date | null;
 }
 
 const Movie = sequelize.define<MovieModel>('Movies', {

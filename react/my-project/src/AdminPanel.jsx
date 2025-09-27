@@ -306,7 +306,6 @@ const AdminPanel = () => {
                           value={movieData.releaseDate}
                           onChange={handleInputChange}
                           className="w-full bg-gray-700 text-white rounded p-2"
-                          required
                           min={new Date().toISOString().split('T')[0]}
                         />
                       </div>

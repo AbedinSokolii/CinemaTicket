@@ -24,6 +24,22 @@ class MovieService {
         return response.json();
     }
 
+    async getTopRatedMovies(): Promise<Movie[]> {
+        const response = await fetch(`${API_URL}/movies/top`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch movies');
+        }
+        return response.json();
+    }
+    
+    async commingSoon(): Promise<Movie[]> {
+        const response = await fetch(`${API_URL}/movies/soon`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch movies');
+        }
+        return response.json();
+    }
+
     async createMovie(movie: Movie): Promise<Movie> {
         const currentUser = authService.getCurrentUser();
         const response = await fetch(`${API_URL}/movies`, {

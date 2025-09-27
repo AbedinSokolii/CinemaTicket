@@ -19,6 +19,19 @@ function MovieList({ searchQuery }) {
     loadMovies();
   }, []);
 
+  const topMovies = async () => {
+    let topMovies = await movieService.getTopRatedMovies();
+    setFilteredMovies(topMovies);
+    setLoading(false);
+  };
+
+  const commingSoon = async () => {
+    let fetchedMovies = await movieService.commingSoon();
+    const commingSoon = fetchedMovies.filter((movie) => new Date(movie.releaseDate).toDateString() === new Date('1970-01-01').toDateString());
+    setFilteredMovies(commingSoon);
+    setLoading(false);
+  };
+
   const loadMovies = async () => {
     try {
       const fetchedMovies = await movieService.getMovies();
@@ -45,18 +58,21 @@ function MovieList({ searchQuery }) {
       
       // Filter by date if selected
       if (selectedDate) {
+        
         filtered = filtered.filter(movie => {
+          console.log("relesed ---> ",movie.releaseDate);
+          console.log("selected ----> ",selectedDate);
           const releaseDate = new Date(movie.releaseDate);
           const selectedDateObj = new Date(selectedDate);
-          
+
           // Set both dates to start of day for comparison
           releaseDate.setHours(0, 0, 0, 0);
           selectedDateObj.setHours(0, 0, 0, 0);
+          // console.log(releaseDate);
+          // console.log(selectedDateObj);
           
-          // Show the movie if:
-          // 1. It has been released (releaseDate is on or before selected date)
-          // 2. It has showTimes available
-          return releaseDate <= selectedDateObj && movie.showTimes && movie.showTimes.length > 0;
+          // Show the movie if it is on the same date:
+         return (releaseDate.getDate() === selectedDateObj.getDate() );
         });
       }
       
@@ -90,7 +106,12 @@ function MovieList({ searchQuery }) {
 
   return (
     <div className="bg-Bg_color">
-      <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+       <div className="flex justify-center items-center gap-4  shadow-lg rounded-md ">
+        <div className='dark:text-white sm:p-2  hover:bg-color_hover rounded-md' onClick={topMovies}>Top Movies</div>
+        <div className='dark:text-white sm:p-2  hover:bg-color_hover rounded-md' onClick={commingSoon}>Comming Soon!</div>  
+        
+        </div>
+      <div className="mx-auto max-w-2xl px-4  sm:px-6 sm:py-2 lg:max-w-7xl lg:px-8">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold tracking-tight text-white">
             {isSearching 
@@ -101,16 +122,16 @@ function MovieList({ searchQuery }) {
             <DatePicker
               selected={selectedDate}
               onChange={(date) => setSelectedDate(date)}
-              dateFormat="yyyy-MM-dd"
+              dateFormat="yyyy-mm-dd"
               placeholderText="Select date"
               className="bg-gray-700 text-white px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               wrapperClassName="date-picker-wrapper"
               calendarClassName="custom-calendar"
               minDate={new Date(new Date().setHours(0, 0, 0, 0))}
-              filterDate={date => {
-                const today = new Date(new Date().setHours(0, 0, 0, 0));
-                return date >= today;
-              }}
+              // filterDate={date => {
+              //   const today = new Date(new Date().setHours(0, 0, 0, 0));
+              //   return date >= today;
+              // }}
             />
           </div>
         </div>

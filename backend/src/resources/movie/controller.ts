@@ -1,9 +1,13 @@
 import { Request, Response } from 'express';
 import Movie from './model';
+import { where } from 'sequelize';
 
 export const createMovie = async (req: Request, res: Response) => {
     try {
-        const movie = await Movie.create(req.body);
+        let reqMovie = req.body;
+        reqMovie.releaseDate = reqMovie.releaseDate !== '' ? reqMovie.releaseDate : new Date('1970-01-01');
+        const movie = await Movie.create(reqMovie);
+        
         return res.status(201).json({
             message: 'Movie created successfully',
             movie
@@ -26,6 +30,29 @@ export const getMovies = async (req: Request, res: Response) => {
     }
 };
 
+export const getTopMovies = async (req: Request, res:Response) => {
+    try {
+        const topMovies = await Movie.findAll({
+            order: [['rating', 'DESC']]
+        })
+        return res.json(topMovies)
+    } catch (e) {
+        console.error('Get movies error:', e);
+        return res.status(500).json({ message: 'Error fetching movies' });
+    }
+}
+
+export const getCommingSoonMovies = async (req: Request, res:Response) => {
+    try {
+        const topMovies = await Movie.findAll({where:{
+            releaseDate: new Date('1970-01-01')
+        }})
+        return res.json(topMovies)
+    } catch (e) {
+        console.error('Get movies error:', e);
+        return res.status(500).json({ message: 'Error fetching movies' });
+    }
+}
 export const updateMovie = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
