@@ -74,7 +74,7 @@ const BookingModal = ({ movie, onClose }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 20 }}
-        className="fixed inset-0 z-50 bg-black/90  rounded-xl p-6 w-full max-w-md mx-auto"
+        className="fixed inset-0 z-50 bg-black/90 overflow-y-auto rounded-xl p-6 max-w-xl mx-auto"
       >
         <h2 className="text-2xl font-bold text-white mb-6">Book Tickets</h2>
 
@@ -156,7 +156,7 @@ const BookingModal = ({ movie, onClose }) => {
         <SeatSelection />
         
         {/* Actions */}
-        <div className="flex gap-4">
+        <div className="flex gap-4 pt-5">
           <button
             onClick={onClose}
             className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg transition-colors"

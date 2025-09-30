@@ -2,21 +2,21 @@ import express from 'express';
 import { createBooking, getUserBookings, cancelBooking, getAllBookings } from './controller';
 import { authenticateToken, isAdmin } from '../../middleware/auth';
 
-const router = express.Router();
+const bookingRouter = express.Router();
 
 // All booking routes require authentication
-router.use(authenticateToken);
+bookingRouter.use(authenticateToken);
 
 // Create a new booking
-router.post('/', createBooking);
+bookingRouter.post('/', createBooking);
 
 // Get user's bookings
-router.get('/user', getUserBookings);
+bookingRouter.get('/user', getUserBookings);
 
 // Cancel a booking
-router.delete('/:id', cancelBooking);
+bookingRouter.delete('/:id', cancelBooking);
 
 // Admin routes
-router.get('/admin/all', isAdmin, getAllBookings);
+bookingRouter.get('/admin/all', isAdmin, getAllBookings);
 
-export default router; 
+export default bookingRouter; 

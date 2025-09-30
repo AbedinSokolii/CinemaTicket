@@ -73,8 +73,6 @@ function MovieList({ searchQuery }) {
           // Set both dates to start of day for comparison
           releaseDate.setHours(0, 0, 0, 0);
           selectedDateObj.setHours(0, 0, 0, 0);
-          // console.log(releaseDate);
-          // console.log(selectedDateObj);
 
           // Show the movie if it is on the same date:
           return (releaseDate.getDate() === selectedDateObj.getDate());
