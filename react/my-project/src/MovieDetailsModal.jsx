@@ -1,8 +1,11 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import RequireAuth from './components/RequireAuth';
 import { Star, Clock, Calendar, Ticket } from 'lucide-react';
+import { useState } from 'react';
 
-const MovieDetailsModal = ({ movie, onClose }) => {
+
+const MovieDetailsModal = ({ movie, onClose, bookingData }) => {
+const [selectedTime, setSelectedTime] = useState(null);
   const formatDate = (dateString) => {
     try {
       const date = new Date(dateString);
@@ -15,6 +18,14 @@ const MovieDetailsModal = ({ movie, onClose }) => {
       return dateString;
     }
   };
+  const setTime = (time) => {
+    setSelectedTime(time);
+  }
+
+  const setBookingMovie = () => {
+    bookingData({...movie, selectedTime})
+    onClose(true)
+  }
 
   return (
     <AnimatePresence>
@@ -73,7 +84,7 @@ const MovieDetailsModal = ({ movie, onClose }) => {
                     {movie.name}
                   </motion.h2>
 
-                  <motion.div 
+                  <motion.div
                     className="flex flex-wrap gap-4 mb-6"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -116,6 +127,7 @@ const MovieDetailsModal = ({ movie, onClose }) => {
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {movie.showTimes.map((time) => (
                         <motion.button
+                          onClick={() => setTime(time)}
                           key={time}
                           className="bg-gray-700 hover:bg-red-600 px-4 py-2 rounded transition-colors text-sm font-medium"
                           whileHover={{ scale: 1.02 }}
@@ -131,6 +143,8 @@ const MovieDetailsModal = ({ movie, onClose }) => {
                     className="w-full bg-red-600 hover:bg-red-700 py-3 rounded-lg font-medium mt-4 flex items-center justify-center gap-2"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
+                    onClick={setBookingMovie}
+                    onClose={() => setSelectedMovie(null)} 
                   >
                     <Ticket size={20} />
                     Book Tickets - {movie.price}

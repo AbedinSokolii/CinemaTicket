@@ -5,6 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import "./datepicker.css";
 import MovieDetailsModal from './MovieDetailsModal';
 import movieService from './services/movie.service';
+import BookingModal from "./components/BookingModal";
 
 function MovieList({ searchQuery }) {
   const [movies, setMovies] = useState([]);
@@ -14,10 +15,16 @@ function MovieList({ searchQuery }) {
   const [selectedDate, setSelectedDate] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [bookingData, setBookingData] = useState(false);
+
 
   useEffect(() => {
     loadMovies();
   }, []);
+
+  const handleBooking = (bookingMovie) => {
+    setBookingData(bookingMovie);
+  }
 
   const topMovies = async () => {
     let topMovies = await movieService.getTopRatedMovies();
@@ -47,21 +54,19 @@ function MovieList({ searchQuery }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       let filtered = movies;
-      
+
       // Filter by search query
       if (searchQuery) {
-        filtered = filtered.filter(movie => 
+        filtered = filtered.filter(movie =>
           movie.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           movie.description.toLowerCase().includes(searchQuery.toLowerCase())
         );
       }
-      
+
       // Filter by date if selected
       if (selectedDate) {
-        
+
         filtered = filtered.filter(movie => {
-          console.log("relesed ---> ",movie.releaseDate);
-          console.log("selected ----> ",selectedDate);
           const releaseDate = new Date(movie.releaseDate);
           const selectedDateObj = new Date(selectedDate);
 
@@ -70,12 +75,12 @@ function MovieList({ searchQuery }) {
           selectedDateObj.setHours(0, 0, 0, 0);
           // console.log(releaseDate);
           // console.log(selectedDateObj);
-          
+
           // Show the movie if it is on the same date:
-         return (releaseDate.getDate() === selectedDateObj.getDate() );
+          return (releaseDate.getDate() === selectedDateObj.getDate());
         });
       }
-      
+
       setFilteredMovies(filtered);
       setIsSearching(searchQuery.length > 0 || selectedDate !== null);
     }, 300);
@@ -106,15 +111,16 @@ function MovieList({ searchQuery }) {
 
   return (
     <div className="bg-Bg_color">
-       <div className="flex justify-center items-center gap-4  shadow-lg rounded-md ">
+
+      <div className="flex justify-center items-center gap-4  shadow-lg rounded-md ">
         <div className='dark:text-white sm:p-2  hover:bg-color_hover rounded-md' onClick={topMovies}>Top Movies</div>
-        <div className='dark:text-white sm:p-2  hover:bg-color_hover rounded-md' onClick={commingSoon}>Comming Soon!</div>  
-        
-        </div>
+        <div className='dark:text-white sm:p-2  hover:bg-color_hover rounded-md' onClick={commingSoon}>Comming Soon!</div>
+
+      </div>
       <div className="mx-auto max-w-2xl px-4  sm:px-6 sm:py-2 lg:max-w-7xl lg:px-8">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold tracking-tight text-white">
-            {isSearching 
+            {isSearching
               ? `Search Results (${filteredMovies.length})`
               : 'Beje zgjedhjen e filmave  tuaj'}
           </h2>
@@ -128,15 +134,15 @@ function MovieList({ searchQuery }) {
               wrapperClassName="date-picker-wrapper"
               calendarClassName="custom-calendar"
               minDate={new Date(new Date().setHours(0, 0, 0, 0))}
-              // filterDate={date => {
-              //   const today = new Date(new Date().setHours(0, 0, 0, 0));
-              //   return date >= today;
-              // }}
+            // filterDate={date => {
+            //   const today = new Date(new Date().setHours(0, 0, 0, 0));
+            //   return date >= today;
+            // }}
             />
           </div>
         </div>
 
-        <motion.div 
+        <motion.div
           layout
           className="mt-10 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-10"
         >
@@ -184,10 +190,21 @@ function MovieList({ searchQuery }) {
           </motion.div>
         )}
 
-        <MovieDetailsModal 
-          movie={selectedMovie} 
-          onClose={() => setSelectedMovie(null)} 
-        />
+        {bookingData && (
+          <BookingModal
+            movie={bookingData}
+            // onClose={onClose}  // Close booking modal
+          />
+        )}
+
+        {selectedMovie && (
+          <MovieDetailsModal
+            bookingData={handleBooking}
+            movie={selectedMovie}
+            onClose={() => setSelectedMovie(null)}
+          />
+        )}
+
       </div>
     </div>
   );
