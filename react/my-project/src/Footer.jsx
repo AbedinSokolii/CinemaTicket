@@ -7,7 +7,7 @@ function Footer() {
   const footerLinks = [
     { name: 'Home', href: '/' },
     { name: 'Movies', href: '/movies' },
-    { name: 'About Us', href: '/about' },
+    { name: 'About Us', href: '/aboutus' },
     { name: 'Contact', href: '/contact' },
     { name: 'Privacy Policy', href: '/privacy' }
   ];
