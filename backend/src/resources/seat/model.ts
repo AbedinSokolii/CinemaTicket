@@ -8,8 +8,7 @@ class SeatModel extends Model<InferAttributes<SeatModel>, InferCreationAttribute
     declare id: CreationOptional<number>;
     declare bookingId: number;
     declare movieId: number;
-    declare seatRow: number;
-    declare seatColumn: number;
+    declare seatNumber: number;
     declare isOccupied: boolean;
     declare showTime: string;
     declare createdAt: CreationOptional<Date>;
@@ -45,15 +44,7 @@ SeatModel.init({
             key: 'id'
         }
     },
-    seatRow: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        validate: {
-            min: 1,
-            max: 10
-        }
-    },
-    seatColumn: {
+    seatNumber: {
         type: DataTypes.INTEGER,
         allowNull: false,
         validate: {
@@ -84,7 +75,7 @@ SeatModel.init({
     indexes: [
         {
             unique: true,
-            fields: ['movieId', 'showTime', 'seatRow', 'seatColumn']
+            fields: ['movieId', 'showTime', 'seatNumber']
         }
     ]
 });

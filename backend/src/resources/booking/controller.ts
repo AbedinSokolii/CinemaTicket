@@ -8,23 +8,22 @@ import { Op } from 'sequelize';
 export const createBooking = async (req: Request, res: Response) => {
     try {
         console.log('Creating booking with data:', req.body);
-        const { movieId, showTime, adultCount, childCount, totalPrice, seats } = req.body;
-        const userId = req.user?.id;
+        const { userId, movieId, showTime, adultCount, childCount, totalPrice, seatsNumber } = req.body;
 
         // Debug logs
         console.log('User ID:', userId);
         console.log('Movie ID:', movieId);
         console.log('Show Time:', showTime);
-        console.log('Seats:', seats);
+        console.log('Seats:', seatsNumber);
 
         if (!userId) {
             return res.status(401).json({ message: 'User not authenticated' });
         }
 
-        if (!seats || !Array.isArray(seats) || seats.length === 0) {
+        if (!seatsNumber) {
             return res.status(400).json({ 
                 message: 'Invalid seats data',
-                received: seats
+                received: seatsNumber
             });
         }
 
@@ -49,12 +48,9 @@ export const createBooking = async (req: Request, res: Response) => {
                 movieId,
                 showTime,
                 isOccupied: true,
-                [Op.or]: seats.map((s: any) => ({
-                    seatRow: s.seatRow,
-                    seatColumn: s.seatColumn
-                }))
+                seatNumber: seatsNumber
             }
-        });
+        })
 
         if (occupiedSeats.length > 0) {
             return res.status(409).json({ 
@@ -65,6 +61,7 @@ export const createBooking = async (req: Request, res: Response) => {
 
         console.log('Creating booking record...');
         // Create booking
+        
         const booking = await BookingModel.create({
             userId,
             movieId,
@@ -78,19 +75,15 @@ export const createBooking = async (req: Request, res: Response) => {
         // Create seats
         try {
             console.log('Creating seat records...');
-            const createdSeats = await Promise.all(
-                seats.map((seat: any) => 
-                    SeatModel.create({
+            const createdSeats = await SeatModel.create({
                         bookingId: booking.id,
                         movieId,
                         showTime,
-                        seatRow: seat.seatRow,
-                        seatColumn: seat.seatColumn,
+                        seatNumber: seatsNumber,
                         isOccupied: true
                     })
-                )
-            );
-            console.log('Seats created:', createdSeats.length);
+
+            console.log('Seats created:', createdSeats);
 
             // Return booking with seats
             const bookingWithSeats = {

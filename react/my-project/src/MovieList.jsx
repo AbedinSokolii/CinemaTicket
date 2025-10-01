@@ -191,6 +191,7 @@ function MovieList({ searchQuery }) {
         {bookingData && (
           <BookingModal
             movie={bookingData}
+            // showTime={showTime}
             // onClose={onClose}  // Close booking modal
           />
         )}

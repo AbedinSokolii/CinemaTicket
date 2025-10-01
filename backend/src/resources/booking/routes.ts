@@ -5,7 +5,7 @@ import { authenticateToken, isAdmin } from '../../middleware/auth';
 const bookingRouter = express.Router();
 
 // All booking routes require authentication
-bookingRouter.use(authenticateToken);
+// bookingRouter.use(authenticateToken);
 
 // Create a new booking
 bookingRouter.post('/', createBooking);

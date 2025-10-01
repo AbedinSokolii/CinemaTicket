@@ -24,6 +24,7 @@ app.get('/movies/top', getTopMovies);
 app.get('/movies/soon', getCommingSoonMovies);
 app.put('/movies/:id', protect, updateMovie);
 app.delete('/movies/:id', protect, deleteMovie);
+
 app.use('/seats', seatsRouter);
 app.use('/booking', bookingRouter)
 

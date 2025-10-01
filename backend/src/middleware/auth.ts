@@ -5,6 +5,8 @@ import User from '../resources/user/model';
 
 export const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
     try {
+        console.log("hini");
+        
         const authHeader = req.headers.authorization;
         const token = authHeader && authHeader.split(' ')[1];
 

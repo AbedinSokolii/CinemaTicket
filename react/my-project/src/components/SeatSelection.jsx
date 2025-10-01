@@ -2,24 +2,25 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X, Check } from 'lucide-react';
 
-const SeatSelection = ({ movieId, showTime, requiredSeats, onConfirm, onCancel }) => {
+const SeatSelection = ({ movie, showTime, requiredSeats, onCancel, sendDataToModal }) => {
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [occupiedSeats, setOccupiedSeats] = useState([]);
   const [error, setError] = useState('');
-
+  
   // Update these constants to match database constraints
-  const ROWS = 10;     // Maximum allowed in database
-  const COLUMNS = 9;   // Keep this the same
+  const ROWS = 4;     // Maximum allowed in database
+  const COLUMNS = 5;   // Keep this the same
 
   useEffect(() => {
     // Fetch occupied seats for this movie and showtime
     const fetchOccupiedSeats = async () => {
       try {
-        const response = await fetch(`http://localhost:3002/api/seats/${movieId}/${encodeURIComponent(showTime)}`);
+        const response = await fetch(`http://localhost:3002/seats/${movie.id}/${encodeURIComponent(movie.selectedTime)}`);
+        
         if (!response.ok) {
           throw new Error('Failed to fetch occupied seats');
         }
-        const data = await response.json();
+        const data = await response.json(); 
         setOccupiedSeats(data);
       } catch (err) {
         console.error('Error fetching occupied seats:', err);
@@ -28,13 +29,13 @@ const SeatSelection = ({ movieId, showTime, requiredSeats, onConfirm, onCancel }
     };
 
     fetchOccupiedSeats();
-  }, [movieId, showTime]);
+  }, [movie, showTime]);
 
   const handleSeatClick = (row, col) => {
     const seatKey = `${row}-${col}`;
-    
+
     // Check if seat is occupied
-    if (occupiedSeats.some(seat => seat.seatRow === row && seat.seatColumn === col)) {
+    if (occupiedSeats.some(seat => seat.seatRow === row && seat.seatRow === col)) {
       return;
     }
 
@@ -50,18 +51,11 @@ const SeatSelection = ({ movieId, showTime, requiredSeats, onConfirm, onCancel }
   };
 
   const handleConfirm = () => {
-    if (selectedSeats.length !== requiredSeats) {
-      setError(`Please select exactly ${requiredSeats} seats`);
-      return;
-    }
-    
-    // Convert seat keys to objects with seatRow and seatColumn
-    const seatObjects = selectedSeats.map(seat => {
-      const [row, col] = seat.split('-').map(Number);
-      return { seatRow: row, seatColumn: col };
+    const selected = selectedSeats.map(seat => {
+      const selected = seat.split('-');
+      return selected[selected.length - 1];
     });
-    
-    onConfirm(seatObjects);
+    sendDataToModal(selected)
   };
 
   return (
@@ -72,7 +66,7 @@ const SeatSelection = ({ movieId, showTime, requiredSeats, onConfirm, onCancel }
       className="bg-Nav_bar rounded-xl p-6 w-full max-w-4xl mx-auto"
     >
       <h2 className="text-2xl font-bold text-white mb-6">Select Your Seats</h2>
-      
+
       {error && (
         <div className="bg-red-500 text-white p-3 rounded mb-4">
           {error}
@@ -106,53 +100,44 @@ const SeatSelection = ({ movieId, showTime, requiredSeats, onConfirm, onCancel }
 
         {/* Seats Grid */}
         <div className="grid gap-4 mb-6 overflow-x-auto">
-          {Array.from({ length: ROWS }, (_, row) => (
-            <div key={row} className="flex justify-center gap-2">
-              <div className="w-8 text-gray-400 text-right">{row + 1}</div>
-              {Array.from({ length: COLUMNS }, (_, col) => {
+          {Array.from({ length: Math.ceil(ROWS * COLUMNS / 5) }, (_, rowIndex) => (
+            <div key={rowIndex} className="flex justify-center gap-2">
+              {Array.from({ length: 5 }, (_, colIndex) => {
+                // Calculate the global seat number
+                const seatNumber = rowIndex * 5 + colIndex + 1;
+                const row = Math.floor((seatNumber - 1) / COLUMNS); // Get the row index based on seat number
+                const col = (seatNumber - 1) % COLUMNS; // Get the column index based on seat number
                 const seatKey = `${row + 1}-${col + 1}`;
                 const isSelected = selectedSeats.includes(seatKey);
-                const isOccupied = occupiedSeats.some(
-                  seat => seat.seatRow === row + 1 && seat.seatColumn === col + 1
-                );
-
+                
+                const isOccupied = occupiedSeats.some(seat => seat.seatNumber === seatNumber);
+                
                 return (
-                  <button
-                    key={col}
-                    onClick={() => handleSeatClick(row + 1, col + 1)}
-                    disabled={isOccupied}
-                    className={`w-8 h-8 rounded flex items-center justify-center transition-colors ${
-                      isOccupied
-                        ? 'bg-gray-800 cursor-not-allowed'
-                        : isSelected
-                        ? 'bg-red-600 hover:bg-red-700'
-                        : 'bg-gray-600 hover:bg-gray-500'
-                    }`}
-                  >
-                    {isOccupied ? (
-                      <X size={14} className="text-gray-400" />
-                    ) : isSelected ? (
-                      <Check size={14} className="text-white" />
-                    ) : (
-                      <span className="text-gray-300 text-sm">{col + 1}</span>
-                    )}
-                  </button>
+                  seatNumber <= ROWS * COLUMNS && (
+                    <button
+                      key={seatNumber}
+                      onClick={() => handleSeatClick(row + 1, col + 1)}
+                      disabled={isOccupied}
+                      className={`w-8 h-8 rounded flex items-center justify-center transition-colors ${isOccupied
+                          ? 'bg-gray-800 cursor-not-allowed'
+                          : isSelected
+                            ? 'bg-red-600 hover:bg-red-700'
+                            : 'bg-gray-600 hover:bg-gray-500'
+                        }`}
+                    >
+                      {isOccupied ? (
+                        <X size={14} className="text-gray-400" />
+                      ) : isSelected ? (
+                        <Check size={14} className="text-white" />
+                      ) : (
+                        <span className="text-gray-300 text-sm">{seatNumber}</span>
+                      )}
+                    </button>
+                  )
                 );
               })}
-              <div className="w-8 text-gray-400">{row + 1}</div>
             </div>
           ))}
-        </div>
-
-        {/* Column numbers at bottom */}
-        <div className="flex justify-center gap-2 mt-2">
-          <div className="w-8"></div>
-          {Array.from({ length: COLUMNS }, (_, col) => (
-            <div key={col} className="w-8 text-center text-gray-400">
-              {col + 1}
-            </div>
-          ))}
-          <div className="w-8"></div>
         </div>
       </div>
 
@@ -166,7 +151,7 @@ const SeatSelection = ({ movieId, showTime, requiredSeats, onConfirm, onCancel }
         </button>
         <button
           onClick={handleConfirm}
-          disabled={selectedSeats.length !== requiredSeats}
+          // disabled={selectedSeats.length !== requiredSeats}
           className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Confirm Seats

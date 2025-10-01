@@ -5,7 +5,7 @@ import Booking from '../booking/model';
 export const getOccupiedSeats = async (req: Request, res: Response) => {
     try {
         const { movieId, showTime } = req.params;
-        
+
         // Debug log
         console.log('Getting occupied seats:', {
             movieId,
@@ -29,7 +29,7 @@ export const getOccupiedSeats = async (req: Request, res: Response) => {
                 showTime: decodedShowTime,
                 isOccupied: true
             },
-            attributes: ['id', 'seatRow', 'seatColumn', 'isOccupied']
+            attributes: ['id', 'seatNumber', 'isOccupied']
         });
 
         // Debug log
@@ -38,7 +38,7 @@ export const getOccupiedSeats = async (req: Request, res: Response) => {
         return res.json(seats);
     } catch (error) {
         console.error('Get occupied seats error:', error);
-        return res.status(500).json({ 
+        return res.status(500).json({
             message: 'Error fetching occupied seats',
             error: error instanceof Error ? error.message : 'Unknown error'
         });
@@ -72,10 +72,8 @@ export const createSeats = async (req: Request, res: Response) => {
         });
 
         // Check for conflicts
-        const conflicts = seats.filter(seat => 
-            existingSeats.some(existing => 
-                existing.seatRow === seat.row && 
-                existing.seatColumn === seat.column
+        const conflicts = seats.filter(seat =>
+            existingSeats.some(existing => existing.seatNumber === seat.seatNumber
             )
         );
 
@@ -88,13 +86,12 @@ export const createSeats = async (req: Request, res: Response) => {
 
         // Create seats
         const createdSeats = await Promise.all(
-            seats.map((seat: any) => 
+            seats.map((seat: any) =>
                 Seat.create({
                     bookingId,
                     movieId: booking.movieId,
                     showTime: booking.showTime,
-                    seatRow: seat.row,
-                    seatColumn: seat.column,
+                    seatNumber: seat.seatNumber,
                     isOccupied: true
                 })
             )
@@ -103,7 +100,7 @@ export const createSeats = async (req: Request, res: Response) => {
         return res.status(201).json(createdSeats);
     } catch (error) {
         console.error('Create seats error:', error);
-        return res.status(500).json({ 
+        return res.status(500).json({
             message: 'Error creating seats',
             error: error instanceof Error ? error.message : 'Unknown error'
         });
@@ -130,13 +127,13 @@ export const deleteSeats = async (req: Request, res: Response) => {
             });
         }
 
-        return res.json({ 
+        return res.json({
             message: 'Seats deleted successfully',
             count: result
         });
     } catch (error) {
         console.error('Delete seats error:', error);
-        return res.status(500).json({ 
+        return res.status(500).json({
             message: 'Error deleting seats',
             error: error instanceof Error ? error.message : 'Unknown error'
         });

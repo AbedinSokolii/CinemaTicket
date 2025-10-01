@@ -8,7 +8,6 @@ const BookingModal = ({ movie, onClose }) => {
   const [adultCount, setAdultCount] = useState(0);
   const [childCount, setChildCount] = useState(0);
   const [selectedSeats, setSelectedSeats] = useState([]);
-  console.log("booking -> ", movie);
 
   // Extract numeric price value from movie.price (removes $ sign)
   const basePrice = parseFloat(movie?.price.replace('$', ''));
@@ -37,36 +36,64 @@ const BookingModal = ({ movie, onClose }) => {
       alert('Please select at least one ticket');
       return;
     }
-    setStep(2);
+    onClose
   };
+
+  // const sendDataToModal
+  const sendDataToModal = (childData) => {
+  
+    setSelectedSeats(+childData[0]);
+  };
+
+  const test = async() => {
+    let bookingData = {};
+    const savedUser = localStorage.getItem('user');
+    const {id, selectedTime} = movie;  
+    
+    bookingData = {
+      userId: +JSON.parse(savedUser).user.id,
+      movieId: +id,
+      showTime: ""+selectedTime,
+      adultCount: +adultCount,
+      childCount: +childCount,
+      totalPrice: +totalPrice,
+      seatsNumber: +selectedSeats, 
+    }
+    
+    const response = await fetch(`http://localhost:3002/booking/`,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(bookingData)
+        });
+        if (!response.ok) {
+            let errorText = 'Failed to create movie';
+            try {
+                const error = await response.json();
+                errorText = error.message || errorText;
+            } catch {}
+            throw new Error(errorText);
+        }
+        return response.json();
+    
+    
+  }
 
   const handleSeatConfirm = (seats) => {
     setSelectedSeats(seats);
+    
     onConfirm({
       adultCount,
       childCount,
       totalPrice,
-      showTime: selectedTime,
+      showTime: movie.selectedTime,
       movieId: movie.id,
       movieName: movie.name,
-      seats: seats.map(seat => ({
-        seatRow: seat.seatRow,
-        seatColumn: seat.seatColumn
-      }))
+      seatNumber: seats
     });
   };
-
-  if (step === 2) {
-    return (
-      <SeatSelection
-        movieId={movie.id}
-        showTime={selectedTime}
-        requiredSeats={adultCount + childCount}
-        onConfirm={handleSeatConfirm}
-        onCancel={() => setStep(1)}
-      />
-    );
-  }
 
   return (
     <AnimatePresence>
@@ -153,18 +180,18 @@ const BookingModal = ({ movie, onClose }) => {
           </div>
         </div>
 
-        <SeatSelection />
+        <SeatSelection movie={movie} sendDataToModal={sendDataToModal}/>
         
         {/* Actions */}
         <div className="flex gap-4 pt-5">
-          <button
+          {/* <button
             onClick={onClose}
             className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg transition-colors"
           >
             Cancel
-          </button>
+          </button> */}
           <button
-            onClick={handleQuantityConfirm}
+            onClick={test}
             className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 rounded-lg transition-colors"
             disabled={adultCount + childCount === 0}
           >
